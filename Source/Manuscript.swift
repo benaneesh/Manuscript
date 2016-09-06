@@ -65,7 +65,7 @@ public struct Manuscript {
   ///
   /// - returns: the `LayoutProxy` instance that is also handed to the `block`
 
-  public static func makeLayout(@autoclosure utils utils: () -> ManuscriptUtils)(_ view: UIView, block: (LayoutProxy) -> ()) -> Manuscript.LayoutProxy {
+  public static func makeLayout(utils: @autoclosure () -> ManuscriptUtils, _ view: UIView, block: (LayoutProxy) -> ()) -> Manuscript.LayoutProxy {
     let layoutProxy = LayoutProxy(view: view, utils: utils())
     block(layoutProxy)
     return layoutProxy
@@ -76,10 +76,13 @@ public struct Manuscript {
   ///
   /// see `makeLayout` for additional details on the parameters
 
-  public static var layout = Manuscript.makeLayout(utils: Manuscript.Utils())
+  //public static var layout = Manuscript.makeLayout(utils: Manuscript.Utils())
+    public static func layout(view: UIView, block: (LayoutProxy) -> ()) {
+         Manuscript.makeLayout(utils: Manuscript.Utils(), view, block: block)
+    }
 
-  static func findCommonSuperview(a: UIView, b: UIView?) -> UIView? {
-
+  static func findCommonSuperview(_ a: UIView, b: UIView?) -> UIView? {
+    
     if let b = b {
 
       // Quick-check the most likely possibilities
@@ -91,7 +94,7 @@ public struct Manuscript {
       // None of those; run the general algorithm
       let ancestorsOfA = NSSet(array: Array(ancestors(a)))
       for ancestor in ancestors(b) {
-        if ancestorsOfA.containsObject(ancestor) {
+        if ancestorsOfA.contains(ancestor) {
           return ancestor
         }
       }
@@ -101,10 +104,10 @@ public struct Manuscript {
     return a // b is nil
   }
 
-  static func ancestors(v: UIView) -> AnySequence<UIView> {
-    return AnySequence { () -> AnyGenerator<UIView> in
+  static func ancestors(_ v: UIView) -> AnySequence<UIView> {
+    return AnySequence { () -> AnyIterator<UIView> in
       var view: UIView? = v
-      return anyGenerator {
+      return AnyIterator {
         let current = view
         view = view?.superview
         return current
@@ -114,7 +117,7 @@ public struct Manuscript {
 
   struct Utils: ManuscriptUtils {
     func isRetina() -> Bool {
-      return UIScreen.mainScreen().scale > 1.0
+      return UIScreen.main.scale > 1.0
     }
   }
 

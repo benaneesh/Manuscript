@@ -40,7 +40,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 
   // MARK: Private Properties
 
-  private let tableView = UITableView(frame: CGRectZero, style: .Plain)
+  private let tableView = UITableView(frame: CGRect.zero, style: .plain)
   private let menuItems: [Int:MainMenuItem] = [
     0:MainMenuItem(
       title: "Simple Button Example",
@@ -67,17 +67,17 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     self.setupLayout()
   }
 
-  override func viewDidAppear(animated: Bool) {
+  override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
 
     if let selectedIndexPath = self.tableView.indexPathForSelectedRow {
-      self.tableView.deselectRowAtIndexPath(selectedIndexPath, animated: animated)
+      self.tableView.deselectRow(at: selectedIndexPath, animated: animated)
     }
   }
 
   // MARK: - UITableViewDelegate
 
-  func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+  func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: IndexPath) {
     if let menuItem = menuItems[indexPath.row] {
       self.navigationController?.pushViewController(menuItem.createController(), animated: true)
     }
@@ -85,15 +85,15 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 
   // MARK: - UITableViewDataSource
 
-  func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return self.menuItems.count
   }
 
-  func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    if let cell = tableView.dequeueReusableCellWithIdentifier(menuItemCellIdentifier) {
+  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    if let cell = tableView.dequeueReusableCell(withIdentifier: menuItemCellIdentifier) {
       if let menuItem = menuItems[indexPath.row] {
         cell.textLabel?.text = menuItem.title
-        cell.accessoryType = .DisclosureIndicator
+        cell.accessoryType = .disclosureIndicator
       }
       return cell
     }
@@ -103,14 +103,14 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
   // MARK: - Setup & Layout
 
   private func setupSubviews() {
-    self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: menuItemCellIdentifier)
+    self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: menuItemCellIdentifier)
     self.tableView.delegate = self
     self.tableView.dataSource = self
     self.view.addSubview(self.tableView)
   }
 
   private func setupLayout() {
-    Manuscript.layout(self.tableView) { c in
+    Manuscript.layout(view: self.tableView) { c in
       c.alignAllEdges(to: self.view)
     }
   }
